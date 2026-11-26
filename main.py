@@ -16,9 +16,16 @@ ENTRY = (
 
 
 def _check_entry(text: str) -> str:
-    """Guard the forecast: one non-blank line, within the 160-char cap."""
-    assert 1 <= len(text) <= 160, f"entry length {len(text)} out of range"
-    assert text == text.strip() and "\n" not in text, "entry must be a single line"
+    """Guard the forecast: one non-blank line, within the 160-char cap.
+
+    Raises ValueError for a bad entry so it fails loudly instead of
+    slipping through silently (an assert would vanish under `python -O`).
+    Returns the text unchanged.
+    """
+    if not 1 <= len(text) <= 160:
+        raise ValueError(f"entry length {len(text)} out of range")
+    if text != text.strip() or "\n" in text:
+        raise ValueError("entry must be a single non-blank line")
     return text
 
 
